@@ -1,10 +1,13 @@
 import arcade
 import os
 
+file_path = os.path.dirname(os.path.abspath(__file__))
+os.chdir(file_path)
+
 # Define constants
 WINDOW_WIDTH = 750
 WINDOW_HEIGHT = 750
-BACKGROUND_COLOR = arcade.color.AQUA
+BACKGROUND_COLOR = arcade.color.WHITE
 GAME_TITLE = "Froggy Road"
 GAME_SPEED = 1 / 60
 
@@ -37,14 +40,66 @@ class BoatSprite(arcade.Sprite):
 
 
 class FrogSprite(arcade.Sprite):
+    level1_width = WINDOW_WIDTH / 3
+    offset1 = level1_width / 2
+    level_height = WINDOW_HEIGHT / 6
+    y_offset = level_height / 2
+
     def __init__(self):
         super().__init__()
         self.texture = arcade.load_texture("images/frog.jpg", scale=.25)
+        self.center_x = self.level1_width - self.offset1
+        self.center_y = self.level_height * 3 - self.y_offset
 
     def update(self):
         super().update()
 
 
+class IntroView(arcade.View):
+    title: arcade.Sprite
+    frog: arcade.Sprite
+    beginner: arcade.Sprite
+    intermediate: arcade.Sprite
+    difficult: arcade.Sprite
+
+    def on_show(self):
+        arcade.set_background_color(BACKGROUND_COLOR)
+        self.title = arcade.Sprite("images/froggy.png", 1.5)
+        self.frog = arcade.Sprite("images/frog.jpg", .25)
+        self.beginner = arcade.Sprite("images/beginner.png", .5)
+        self.intermediate = arcade.Sprite("images/intermediate.png", .5)
+        self.difficult = arcade.Sprite("images/difficult.png", .5)
+
+    def on_draw(self):
+        arcade.start_render()
+        self.title.center_x = WINDOW_WIDTH / 2
+        self.title.center_y = 3 * WINDOW_HEIGHT / 4
+        self.title.draw()
+
+        self.frog.center_x = WINDOW_WIDTH / 2
+        self.frog.center_y = WINDOW_HEIGHT / 2
+        self.frog.draw()
+
+        self.beginner.center_x = WINDOW_WIDTH / 5
+        self.beginner.center_y = WINDOW_HEIGHT / 4
+        self.beginner.draw()
+
+        self.intermediate.center_x = 2.5 * WINDOW_WIDTH / 5
+        self.intermediate.center_y = WINDOW_HEIGHT / 4
+        self.intermediate.draw()
+
+        self.difficult.center_x = 4 * WINDOW_WIDTH / 5
+        self.difficult.center_y = WINDOW_HEIGHT / 4
+        self.difficult.draw()
+
+        arcade.draw_text("click to advance", WINDOW_WIDTH/2, WINDOW_HEIGHT/2,
+                         arcade.color.BLACK, font_size=30, anchor_x="center")
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        game_view = GameView()
+        self.window.show_view(game_view)
+
+'''
 class Intro(arcade.Window):
     title: arcade.Sprite
     frog: arcade.Sprite
@@ -96,32 +151,39 @@ class Intro(arcade.Window):
         else:
             speed = 1
         MyGame().setup(speed)
+'''
 
+#class MyGame(arcade.Window):
+class GameView(arcade.View):
 
-class MyGame(arcade.Window):
     speed: int
+    LILLIES = 6
+    ROWS = 3
+
     frog: FrogSprite
     lily_list: arcade.SpriteList[LilySprite]
     boat_list: arcade.SpriteList[BoatSprite]
+
     level1_width = WINDOW_WIDTH / 3
     level23_width = WINDOW_WIDTH / 7
     offset1 = level1_width / 2
     offset23 = level23_width / 2
     level_height = WINDOW_HEIGHT / 6
     y_offset = level_height / 2
-    LILLIES = 6
-    ROWS = 3
 
+    '''
     def __init__(self):
         """ Initialize variables """
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
         self.background = None
         self.lily_list = []
         self.boat_list = []
+        self.frog=FrogSprite()
+    '''
 
-    def setup(self, user_speed):
+    #def setup(self, user_speed):
+    def on_show(self):
         """ Setup the game (or reset the game) """
-        self.speed = user_speed
         arcade.set_background_color(BACKGROUND_COLOR)
         self.background = arcade.load_texture("images/water.jpg")
         self.frog = FrogSprite()
@@ -156,8 +218,10 @@ class MyGame(arcade.Window):
         self.boat_list.draw()
         for boat in self.boat_list:
             boat.forward(1.0)
+        '''
         self.frog.center_x = self.level1_width - self.offset1
         self.frog.center_y = self.level_height * 3 - self.y_offset
+        '''
         self.frog.draw()
 
     def on_update(self, delta_time):
@@ -165,22 +229,27 @@ class MyGame(arcade.Window):
         for boat in self.boat_list:
             boat.change_y=5
             self.boat_list.update()
+        self.frog.update()
 
     def on_key_release(self, symbol, modifiers):
         """ Called whenever a key is released. """
         if symbol == arcade.key.LEFT:
-            self.frog.thrust = 0
+            self.frog.center_x = self.frog.center_x - self.level1_width
         elif symbol == arcade.key.RIGHT:
-            self.frog.thrust = 0
+            self.frog.center_x = self.frog.center_x + self.level1_width
         elif symbol == arcade.key.UP:
-            self.frog.thrust = 0
+            self.frog.center_y = self.frog.center_y + self.level_height
         elif symbol == arcade.key.DOWN:
-            self.frog.thrust = 0
+            self.frog.center_y = self.frog.center_y - self.level_height
+
+        if self.frog.collides_with_sprite(BoatSprite):
+            pass
 
 
 def main():
-    window = Intro()
-    window.setup()
+    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
+    intro = IntroView()
+    window.show_view(intro)
     arcade.run()
 
 
