@@ -41,7 +41,8 @@ class GameView(arcade.View):
         self.lily_list.draw()
         self.boat_list.draw()
         for boat in self.boat_list:
-            boat.forward(1.0)
+            if boat.center_y == WINDOW_HEIGHT/2:
+                self.boat_list.append(BoatSprite())
         self.frog.draw()
 
     def on_update(self, delta_time):
@@ -49,8 +50,7 @@ class GameView(arcade.View):
         for boat in self.boat_list:
             boat.change_y=5
             self.boat_list.update()
-            #if boat.center_y >= WINDOW_HEIGHT:
-            #    self.boat_list.append(BoatSprite())
+            boat.change_y=0 #reset speed of boat for the next one
         self.frog.update()
 
     def on_key_release(self, symbol, modifiers):
