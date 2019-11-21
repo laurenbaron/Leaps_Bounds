@@ -11,7 +11,6 @@ BACKGROUND_COLOR = arcade.color.WHITE
 GAME_TITLE = "Froggy Road"
 GAME_SPEED = 1 / 60
 
-#variables the sprites and views need about the window to draw things
 level1_width = WINDOW_WIDTH / 3
 # level23_width = WINDOW_WIDTH / 7
 offset1 = level1_width / 2

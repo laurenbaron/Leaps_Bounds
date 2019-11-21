@@ -1,6 +1,6 @@
 from Sprites import *
 
-#my to do list: add boats randomly spaced, multiple screens, make pictures pretty, win/lose, logs, frog off screen, rearrange scope of variables bc keep importing game
+#to do list: add boats randomly spaced, change angle, multiple screens, make pictures pretty, win/lose, logs, frog off screen, rearrange scope of variables bc keep importing game
 
 class GameView(arcade.View):
     speed: int
@@ -8,11 +8,17 @@ class GameView(arcade.View):
     lily_list: arcade.SpriteList[LilySprite]
     boat_list: arcade.SpriteList[BoatSprite]
 
-    #on website link sent in slack, they didn't use inits with views. do we still need them?
+    def __init__(self):
+        super().__init__()
+        self.speed=0
+        self.frog=None
+        self.lily_list=None
+        self.boat_list=None
+
     def on_show(self):
         """ Setup the game (or reset the game) """
         arcade.set_background_color(BACKGROUND_COLOR)
-        self.background = arcade.load_texture("images/water.jpg")
+        self.background = arcade.load_texture("images/pond2.jpg")
         self.frog = FrogSprite()
         self.lily_list = arcade.SpriteList()
         self.boat_list = arcade.SpriteList()
@@ -76,10 +82,19 @@ class IntroView(arcade.View):
     intermediate: arcade.Sprite
     difficult: arcade.Sprite
 
+    def __init__(self):
+        super().__init__()
+        self.title=None
+        self.frog=None
+        self.beginner=None
+        self.intermediate=None
+        self.difficult=None
+
     def on_show(self):
         arcade.set_background_color(BACKGROUND_COLOR)
-        self.title = arcade.Sprite("images/froggy.png", 1.5)
-        self.frog = arcade.Sprite("images/frog.jpg", .25)
+        self.background = arcade.load_texture("images/pond.jpg",8)
+        self.title = arcade.Sprite("images/froggyroad.PNG", .5)
+        self.frog = arcade.Sprite("images/frog.PNG", .1)
         self.beginner = arcade.Sprite("images/beginner.png", .5)
         self.intermediate = arcade.Sprite("images/intermediate.png", .5)
         self.difficult = arcade.Sprite("images/difficult.png", .5)
@@ -118,6 +133,9 @@ class IntroView(arcade.View):
 
 
 class LoseView(arcade.View):
+    def __init__(self):
+        super().__init__()
+
     def on_show(self):
         arcade.set_background_color(BACKGROUND_COLOR)
 
@@ -128,6 +146,9 @@ class LoseView(arcade.View):
 
 
 class WinView(arcade.View):
+    def __init__(self):
+        super().__init__()
+
     def on_show(self):
         arcade.set_background_color(BACKGROUND_COLOR)
 
