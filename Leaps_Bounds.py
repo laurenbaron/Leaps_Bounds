@@ -1,12 +1,15 @@
 from Sprites import *
 
-#to do list: add boats randomly spaced, change angle, multiple screens, make pictures pretty, win/lose, logs, frog off screen, rearrange scope of variables bc keep importing game
+#to do list: add boats randomly spaced, multiple screens, make pictures pretty, win/lose, logs, frog off screen, rearrange scope of variables bc keep importing game
 
 class GameView(arcade.View):
     speed: int
     frog: arcade.Sprite
     lily_list: arcade.SpriteList[LilySprite]
     boat_list: arcade.SpriteList[BoatSprite]
+    logs: int
+    logs_location: int
+    log_list: arcade.SpriteList[LogSprite]
 
     def __init__(self):
         super().__init__()
@@ -14,6 +17,9 @@ class GameView(arcade.View):
         self.frog=None
         self.lily_list=None
         self.boat_list=None
+        self.logs=0
+        self.log_location=0
+        self.log_list=None
 
     def on_show(self):
         """ Setup the game (or reset the game) """
@@ -23,22 +29,42 @@ class GameView(arcade.View):
         self.lily_list = arcade.SpriteList()
         self.boat_list = arcade.SpriteList()
 
-        # make lily pad/boat grid
-        row = 1
-        while row <= ROWS:
+        #how many logs. 1-5 because need to have at least one lilypad
+        self.logs=random.randrange(1,6)
+
+        # make lily pad/log/boat grid
+        column = 1
+        while column <= COLUMNS:
             # boat in the middle
-            if row == 2:
+            if column == 2:
                 boat = BoatSprite()
                 self.boat_list.append(boat)
             else:
                 index = 1
-                while index <= LILLIES:
+                while index <= ROWS:
+                    '''
+                    print(self.logs)
+                    current_log=1
+                    while current_log<=self.logs:
+                        self.log_location = random.randrange(1, 7) #randomly place it in one of the 6 rows
+                        log = LogSprite()
+                        log.center_y = (level_height * index) - y_offset
+                        log.center_x = (level1_width * self.log_location) - offset1
+                        print(log)
+                        print(self.log_list)
+                        self.log_list.append(log)
+                        print(len(self.log_list))
+                        current_log+=1
+                
+                    if not index.collides_with_list(self.frog_list):
+                    '''
                     lily = LilySprite()
                     lily.center_y = (level_height * index) - y_offset
-                    lily.center_x = (level1_width * row) - offset1
+                    lily.center_x = (level1_width * column) - offset1
                     self.lily_list.append(lily)
                     index += 1
-            row += 1
+            column += 1
+
 
     def on_draw(self):
         """ Called when it is time to draw the world """
@@ -46,8 +72,10 @@ class GameView(arcade.View):
         arcade.draw_texture_rectangle(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
         self.lily_list.draw()
         self.boat_list.draw()
+        #self.log_list.draw()
         for boat in self.boat_list:
-            if boat.center_y == WINDOW_HEIGHT/2:
+            #random time to send the next boat based on other boat's location
+            if boat.center_y in range(boat.new_boat,boat.new_boat+5): #changing y by 5 so counts by 5s. can miss the new_boat since new_boat doesnt count by 5s
                 self.boat_list.append(BoatSprite())
         self.frog.draw()
 
@@ -59,20 +87,24 @@ class GameView(arcade.View):
             boat.change_y=0 #reset speed of boat for the next one
         self.frog.update()
 
+        if self.frog.collides_with_list(self.boat_list):
+            lose=LoseView()
+            self.window.show_view(lose)
+
     def on_key_release(self, symbol, modifiers):
         """ Called whenever a key is released. """
         if symbol == arcade.key.LEFT:
             self.frog.center_x = self.frog.center_x - level1_width
+            self.frog.angle= 0
         elif symbol == arcade.key.RIGHT:
             self.frog.center_x = self.frog.center_x + level1_width
+            #how to reflect an image!!!!
         elif symbol == arcade.key.UP:
             self.frog.center_y = self.frog.center_y + level_height
+            self.frog.angle = -90
         elif symbol == arcade.key.DOWN:
             self.frog.center_y = self.frog.center_y - level_height
-
-        if self.frog.collides_with_list(self.boat_list):
-            lose=LoseView()
-            self.window.show_view(lose)
+            self.frog.angle = 90
 
 
 class IntroView(arcade.View):
@@ -92,7 +124,7 @@ class IntroView(arcade.View):
 
     def on_show(self):
         arcade.set_background_color(BACKGROUND_COLOR)
-        self.background = arcade.load_texture("images/pond.jpg",8)
+        #self.background = intro_image
         self.title = arcade.Sprite("images/froggyroad.PNG", .5)
         self.frog = arcade.Sprite("images/frog.PNG", .1)
         self.beginner = arcade.Sprite("images/beginner.png", .5)
@@ -101,6 +133,8 @@ class IntroView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
+        #print(self.background.width)
+        #arcade.draw_texture_rectangle(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
         self.title.center_x = WINDOW_WIDTH / 2
         self.title.center_y = 3 * WINDOW_HEIGHT / 4
         self.title.draw()

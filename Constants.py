@@ -1,5 +1,6 @@
 import arcade
 import os
+import random
 
 file_path = os.path.dirname(os.path.abspath(__file__))
 os.chdir(file_path)
@@ -17,5 +18,7 @@ offset1 = level1_width / 2
 # offset23 = level23_width / 2
 level_height = WINDOW_HEIGHT / 6
 y_offset = level_height / 2
-LILLIES = 6
-ROWS = 3
+ROWS = 6
+COLUMNS = 3
+
+#intro_image=arcade.load_texture("images/frog.PNG",8)
