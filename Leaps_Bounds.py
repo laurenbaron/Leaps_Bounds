@@ -91,6 +91,10 @@ class GameView(arcade.View):
             lose=LoseView()
             self.window.show_view(lose)
 
+        if self.frog.collides_with_point([WINDOW_WIDTH+offset1,self.frog.center_y]):
+            win=WinView()
+            self.window.show_view(win)
+
     def on_key_release(self, symbol, modifiers):
         """ Called whenever a key is released. """
         if symbol == arcade.key.LEFT:
