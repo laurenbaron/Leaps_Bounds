@@ -1,6 +1,6 @@
 from Sprites import *
 
-#to do list: add boats randomly spaced, multiple screens, make pictures pretty, win/lose, logs, frog off screen, rearrange scope of variables bc keep importing game
+#to do list: background of start, multiple screens, make pictures pretty, win/lose, logs, frog off screen, rearrange scope of variables bc keep importing game
 
 class GameView(arcade.View):
     speed: int
@@ -162,38 +162,66 @@ class IntroView(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
         if self.difficult.collides_with_point([x, y]):
             speed = 10
+            start_game = GameView()
+            self.window.show_view(start_game)
         elif self.intermediate.collides_with_point([x, y]):
             speed = 5
+            start_game = GameView()
+            self.window.show_view(start_game)
         else:
             speed = 1 #default if don't press in buttons. need to do speed stuff later
-        start_game=GameView()
-        self.window.show_view(start_game)
+            start_game = GameView()
+            self.window.show_view(start_game)
 
 
 class LoseView(arcade.View):
+    restart: arcade.Sprite
+
     def __init__(self):
         super().__init__()
+        self.restart=None
 
     def on_show(self):
         arcade.set_background_color(BACKGROUND_COLOR)
+        self.background = arcade.load_texture("images/You_lose.png")
+        self.restart = arcade.Sprite("images/restart.png")
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_text("YOU LOSE", WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2,
-                         arcade.color.BLACK, font_size=30, anchor_x="center")
+        arcade.draw_texture_rectangle(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
+        self.restart.center_x = WINDOW_WIDTH / 2
+        self.restart.center_y = WINDOW_HEIGHT / 4
+        self.restart.draw()
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if self.restart.collides_with_point([x, y]):
+            restart_game=IntroView()
+            self.window.show_view(restart_game)
 
 
 class WinView(arcade.View):
+    restart: arcade.Sprite
+
     def __init__(self):
         super().__init__()
+        self.restart=None
 
     def on_show(self):
         arcade.set_background_color(BACKGROUND_COLOR)
+        self.background = arcade.load_texture("images/You_win.png")
+        self.restart = arcade.Sprite("images/restart.png")
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_text("YOU WIN", WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2,
-                         arcade.color.BLACK, font_size=30, anchor_x="center")
+        arcade.draw_texture_rectangle(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
+        self.restart.center_x = WINDOW_WIDTH / 2
+        self.restart.center_y = WINDOW_HEIGHT / 4
+        self.restart.draw()
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if self.restart.collides_with_point([x, y]):
+            restart_game=IntroView()
+            self.window.show_view(restart_game)
 
 
 def main():
