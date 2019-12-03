@@ -12,15 +12,17 @@ BACKGROUND_COLOR = arcade.color.WHITE
 GAME_TITLE = "Froggy Road"
 GAME_SPEED = 1 / 60
 
-LEVEL1_WIDTH = WINDOW_WIDTH / 3
-LEVEL23_WIDTH = WINDOW_WIDTH / 5
+#constants for drawing the "grid" of columns and rows to draw lillies, boats, frog, etc.
+ROWS = 6
+COLUMNS_1 = 3
+COLUMNS_23 = 5
+LEVEL1_WIDTH = WINDOW_WIDTH / COLUMNS_1
+LEVEL23_WIDTH = WINDOW_WIDTH / COLUMNS_23
 OFFSET1 = LEVEL1_WIDTH / 2
 OFFSET23 = LEVEL23_WIDTH / 2
 LEVEL_HEIGHT = WINDOW_HEIGHT / 6
 Y_OFFSET = LEVEL_HEIGHT / 2
-ROWS = 6
-COLUMNS_1 = 3
-COLUMNS_23 = 5
+
 
 
 #intro_image=arcade.load_texture("images/frog.PNG",8)
