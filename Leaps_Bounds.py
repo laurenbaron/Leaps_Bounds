@@ -43,10 +43,10 @@ class GameView(arcade.View):
         self.lily_list = arcade.SpriteList()
         self.boat_list_2 = arcade.SpriteList()
         self.boat_list_4 = arcade.SpriteList()
-        self.log_list=arcade.SpriteList()
+        self.log_list = arcade.SpriteList()
 
-        # how many logs. possible numbers 1-5 because need to have at least one lily pad
-        self.logs = random.randrange(1, 6)
+        # how many logs. possible numbers 1-4 because want to have at least 2 lily pads
+        self.logs = random.randrange(1, 5)
 
         # make lily pad/log/boat grid
         column = 1
@@ -59,38 +59,40 @@ class GameView(arcade.View):
                 row = 1
                 current_log = 1
                 while row <= ROWS:
-                    all_rows = [1, 2, 3, 4, 5, 6] #need a new set of columns for each row
-                    while current_log<=self.logs:
-                        self.log_location = random.choice(all_rows) #randomly place it in one of the 6 rows
+                    all_rows = [1, 2, 3, 4, 5, 6]  # need a new set of columns for each row
+                    while current_log <= self.logs:
+                        self.log_location = random.choice(all_rows)  # randomly place it in one of the 6 rows
                         all_rows.remove(self.log_location)
                         log = LogSprite()
-                        log.center_y = (LEVEL_HEIGHT * self.log_location) - Y_OFFSET #put it at the chosen row
+                        log.center_y = (LEVEL_HEIGHT * self.log_location) - Y_OFFSET  # put it at the chosen row
                         log.center_x = (self.column_width * column) - self.offset
                         self.log_list.append(log)
-                        current_log+=1
-                    for empty in all_rows: #if no log has taken the row, put a lily in it
+                        current_log += 1
+                    for empty in all_rows:  # if no log has taken the row, put a lily in it
                         lily = LilySprite()
                         lily.center_y = (LEVEL_HEIGHT * empty) - Y_OFFSET
                         lily.center_x = (self.column_width * column) - self.offset
                         self.lily_list.append(lily)
                     row += 1
-                    print(row)
-                    print(all_rows)
             column += 1
-            print(column)
 
     def on_draw(self):
         """ Called when it is time to draw the world """
         arcade.start_render()
         arcade.draw_texture_rectangle(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
+
         self.lily_list.draw()
         self.boat_list_2.draw()
+        self.log_list.draw()
         if self.level != 1:
             self.boat_list_4.draw()  # only draw the 2nd boat row if on the advanced levels
-        self.log_list.draw()
+
         for boat in self.boat_list_2:
-            # random time to send the next boat based on other boat's location
-            # changing y by speed so counts by speed. can miss the new_boat since new_boat doesnt count by 2s,5s,10s
+            '''
+            random time to send the next boat based on other boat's location
+            why in range: hanging y by speed so counts by speed. can miss the new_boat since new_boat doesnt 
+            count by 2s,5s,10s
+            '''
             if boat.center_y in range(boat.new_boat, boat.new_boat + self.speed):
                 self.boat_list_2.append(BoatSprite(self.column_width, self.offset, 2))
         for boat in self.boat_list_4:
@@ -115,7 +117,7 @@ class GameView(arcade.View):
             self.window.show_view(lose)
 
         if self.frog.collides_with_point([WINDOW_WIDTH + self.offset, self.frog.center_y]):
-            if self.level == 1:
+            if self.level == 1:  # don't go to win screen yet go to next level
                 self.level += 1
                 next_level = GameView(self.speed, self.level)
                 self.window.show_view(next_level)
@@ -127,7 +129,7 @@ class GameView(arcade.View):
         """ Called whenever a key is released. """
         if symbol == arcade.key.LEFT:
             self.frog.angle = 0
-            if (self.frog.center_x - self.column_width) < 0:  # make sure frog isn't moving off the screen
+            if (self.frog.center_x - self.column_width) < 0:  # make sure frog isn't moving off the screen or on a log
                 pass
             else:
                 self.frog.center_x = self.frog.center_x - self.column_width
@@ -208,11 +210,10 @@ class IntroView(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
         if self.difficult.collides_with_point([x, y]):
-            start_game = GameView(10,
-                                  1)  # pass in the speed for the level and what level (if press intro buttons go to first level)
+            start_game = GameView(6, 1)  # pass in the speed for the level and what level (if press intro buttons go to first level)
             self.window.show_view(start_game)
         elif self.intermediate.collides_with_point([x, y]):
-            start_game = GameView(5, 1)
+            start_game = GameView(4, 1)
             self.window.show_view(start_game)
         elif self.beginner.collides_with_point([x, y]):
             start_game = GameView(2, 1)
