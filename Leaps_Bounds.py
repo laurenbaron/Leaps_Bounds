@@ -1,6 +1,6 @@
 from Sprites import *
 
-#to do list: background of start, multiple screens, make pictures pretty, win/lose, logs, frog off screen, rearrange scope of variables bc keep importing game
+#to do list: background of start, multiple screens, logs, fix boat on second column
 
 class GameView(arcade.View):
     speed: int
@@ -10,16 +10,20 @@ class GameView(arcade.View):
     logs: int
     logs_location: int
     log_list: arcade.SpriteList[LogSprite]
+    level: int
+    columns: int
 
-    def __init__(self):
+    def __init__(self, level_speed, my_level):
         super().__init__()
-        self.speed=0
+        self.speed=level_speed
+        self.level=my_level
         self.frog=None
         self.lily_list=None
         self.boat_list=None
         self.logs=0
         self.log_location=0
         self.log_list=None
+        self.columns=0
 
     def on_show(self):
         """ Setup the game (or reset the game) """
@@ -34,11 +38,16 @@ class GameView(arcade.View):
 
         # make lily pad/log/boat grid
         column = 1
-        while column <= COLUMNS:
-            # boat in the middle
-            if column == 2:
-                boat = BoatSprite()
+        if self.level==1:
+            self.columns=COLUMNS_1
+        else:
+            self.columns=COLUMNS_23
+
+        while column <= self.columns:
+            if column%2==0: #only draw boat on even columns
+                boat = BoatSprite(self.level)
                 self.boat_list.append(boat)
+
             else:
                 index = 1
                 while index <= ROWS:
@@ -59,8 +68,12 @@ class GameView(arcade.View):
                     if not index.collides_with_list(self.frog_list):
                     '''
                     lily = LilySprite()
-                    lily.center_y = (level_height * index) - y_offset
-                    lily.center_x = (level1_width * column) - offset1
+                    if self.level==1:
+                        lily.center_y = (LEVEL_HEIGHT * index) - Y_OFFSET
+                        lily.center_x = (LEVEL1_WIDTH * column) - OFFSET1
+                    else:
+                        lily.center_y = (LEVEL_HEIGHT * index) - Y_OFFSET
+                        lily.center_x = (LEVEL23_WIDTH * column) - OFFSET23
                     self.lily_list.append(lily)
                     index += 1
             column += 1
@@ -75,14 +88,15 @@ class GameView(arcade.View):
         #self.log_list.draw()
         for boat in self.boat_list:
             #random time to send the next boat based on other boat's location
-            if boat.center_y in range(boat.new_boat,boat.new_boat+5): #changing y by 5 so counts by 5s. can miss the new_boat since new_boat doesnt count by 5s
-                self.boat_list.append(BoatSprite())
+            if boat.center_y in range(boat.new_boat,boat.new_boat+self.speed):
+            # changing y by speed so counts by speed. can miss the new_boat since new_boat doesnt count by 2s,5s,10s
+                self.boat_list.append(BoatSprite(self.level))
         self.frog.draw()
 
     def on_update(self, delta_time):
         """ Called every frame of the game (1/GAME_SPEED times per second)"""
         for boat in self.boat_list:
-            boat.change_y=5
+            boat.change_y=self.speed
             self.boat_list.update()
             boat.change_y=0 #reset speed of boat for the next one
         self.frog.update()
@@ -91,24 +105,38 @@ class GameView(arcade.View):
             lose=LoseView()
             self.window.show_view(lose)
 
-        if self.frog.collides_with_point([WINDOW_WIDTH+offset1,self.frog.center_y]):
-            win=WinView()
-            self.window.show_view(win)
+        if self.frog.collides_with_point([WINDOW_WIDTH+OFFSET1,self.frog.center_y]):
+            if self.level==1:
+                self.level+=1
+                next=GameView(self.speed, self.level)
+                self.window.show_view(next)
+            else:
+                win=WinView()
+                self.window.show_view(win)
 
     def on_key_release(self, symbol, modifiers):
         """ Called whenever a key is released. """
         if symbol == arcade.key.LEFT:
-            self.frog.center_x = self.frog.center_x - level1_width
-            self.frog.angle= 0
+            self.frog.angle = 0
+            if (self.frog.center_x - LEVEL1_WIDTH)<0: #make sure frog isn't moving off the screen
+                pass
+            else:
+                self.frog.center_x = self.frog.center_x - LEVEL1_WIDTH
         elif symbol == arcade.key.RIGHT:
-            self.frog.center_x = self.frog.center_x + level1_width
-            #how to reflect an image!!!!
+            # how to reflect an image!!!!
+                self.frog.center_x = self.frog.center_x + LEVEL1_WIDTH
         elif symbol == arcade.key.UP:
-            self.frog.center_y = self.frog.center_y + level_height
             self.frog.angle = -90
+            if (self.frog.center_y + LEVEL_HEIGHT)>WINDOW_HEIGHT:
+                pass
+            else:
+                self.frog.center_y = self.frog.center_y + LEVEL_HEIGHT
         elif symbol == arcade.key.DOWN:
-            self.frog.center_y = self.frog.center_y - level_height
             self.frog.angle = 90
+            if (self.frog.center_y - LEVEL_HEIGHT)<0:
+                pass
+            else:
+                self.frog.center_y = self.frog.center_y - LEVEL_HEIGHT
 
 
 class IntroView(arcade.View):
@@ -161,16 +189,13 @@ class IntroView(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
         if self.difficult.collides_with_point([x, y]):
-            speed = 10
-            start_game = GameView()
+            start_game = GameView(10,1) #pass in the speed for the level and what level (if press intro buttons go to first level)
             self.window.show_view(start_game)
         elif self.intermediate.collides_with_point([x, y]):
-            speed = 5
-            start_game = GameView()
+            start_game = GameView(5,1)
             self.window.show_view(start_game)
-        else:
-            speed = 1 #default if don't press in buttons. need to do speed stuff later
-            start_game = GameView()
+        elif self.beginner.collides_with_point([x, y]):
+            start_game = GameView(2,1)
             self.window.show_view(start_game)
 
 

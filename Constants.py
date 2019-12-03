@@ -12,13 +12,15 @@ BACKGROUND_COLOR = arcade.color.WHITE
 GAME_TITLE = "Froggy Road"
 GAME_SPEED = 1 / 60
 
-level1_width = WINDOW_WIDTH / 3
-# level23_width = WINDOW_WIDTH / 7
-offset1 = level1_width / 2
-# offset23 = level23_width / 2
-level_height = WINDOW_HEIGHT / 6
-y_offset = level_height / 2
+LEVEL1_WIDTH = WINDOW_WIDTH / 3
+LEVEL23_WIDTH = WINDOW_WIDTH / 5
+OFFSET1 = LEVEL1_WIDTH / 2
+OFFSET23 = LEVEL23_WIDTH / 2
+LEVEL_HEIGHT = WINDOW_HEIGHT / 6
+Y_OFFSET = LEVEL_HEIGHT / 2
 ROWS = 6
-COLUMNS = 3
+COLUMNS_1 = 3
+COLUMNS_23 = 5
+
 
 #intro_image=arcade.load_texture("images/frog.PNG",8)
