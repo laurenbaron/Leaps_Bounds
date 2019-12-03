@@ -1,7 +1,7 @@
 from Sprites import *
 
 
-# to do list: background of start, logs, fix boats, reflect frog
+# to do list: background of start, logs, fix boats, reflect frog, documentation
 
 class GameView(arcade.View):
     speed: int
