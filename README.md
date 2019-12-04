@@ -25,7 +25,7 @@ Lauren Baron; lbaron@udel.edu
 * graphics are not my own
     * http://arcade.photonstorm.com/
     * https://www.google.com/imghp
-* used Views for multiple screens, looked at full examples
+* used Views for multiple screens, looked at full examples for help on key presses, collisions, etc. 
     * http://arcade.academy/examples/view_instructions_and_game_over.html#view-instructions-and-game-over
     * http://arcade.academy/examples/sprite_collect_coins_with_stats.html#sprite-collect-coins-with-stats
     * http://arcade.academy/examples/asteroid_smasher.html#asteroid-smasher

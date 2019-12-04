@@ -2,7 +2,6 @@ import arcade
 import os
 import random
 
-
 file_path = os.path.dirname(os.path.abspath(__file__))
 os.chdir(file_path)
 
@@ -13,7 +12,7 @@ BACKGROUND_COLOR = arcade.color.AERO_BLUE
 GAME_TITLE = "Froggy Road"
 GAME_SPEED = 1 / 60
 
-#constants for drawing the "grid" of columns and rows to draw lillies, boats, frog, etc.
+# constants for drawing the "grid" of columns and rows to draw lillies, boats, frog, etc.
 ROWS = 6
 COLUMNS_1 = 3
 COLUMNS_23 = 5
