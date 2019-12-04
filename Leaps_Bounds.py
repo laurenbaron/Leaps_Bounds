@@ -1,7 +1,7 @@
 from Sprites import *
 
 
-# to do list: logs, fix boats, documentation
+# TODO:: fix boats, preview of game, type variables for documentation
 
 class GameView(arcade.View):
     """
@@ -20,6 +20,8 @@ class GameView(arcade.View):
     columns: int
     column_width: int
     offset: int
+    potential_x: int
+    potential_y: int
 
     def __init__(self, level_speed, my_level):
         """
@@ -40,6 +42,13 @@ class GameView(arcade.View):
         self.columns = 0
         self.column_width = 0
         self.offset = 0
+        self.potential_x = 0
+        self.potential_y = 0
+
+        # self.set_columns()
+        # self.frog = FrogSprite(self.column_width, self.offset)
+        # self.log_list = arcade.SpriteList()
+        # self.physics_engine = arcade.PhysicsEngineSimple(self.frog, self.log_list)
 
     def on_show(self):
         """ Setup the game """
@@ -56,7 +65,7 @@ class GameView(arcade.View):
         # how many logs. possible numbers 1-4 because want to have at least 2 lily pads
         self.logs = random.randrange(1, 5)
 
-        #draw grid of lilies, boats, and logs
+        # draw grid of lilies, boats, and logs
         self.make_grid()
 
     def on_draw(self):
@@ -68,7 +77,7 @@ class GameView(arcade.View):
         self.boat_list_2.draw()
         self.log_list.draw()
         if self.level != 1:
-            self.boat_list_4.draw()  # only draw the 2nd boat row if on the advanced levels
+            self.boat_list_4.draw()  # only draw the 2nd boat row if on the advanced level
 
         for boat in self.boat_list_2:
             '''
@@ -88,6 +97,8 @@ class GameView(arcade.View):
         Called every frame of the game (1/GAME_SPEED times per second)
         Make sure boats are constantly moving up and always check for a collision with every movement
         """
+        # self.physics_engine.update()
+        # update both boat lists when dealing with 2 lists during hard level
         for boat in self.boat_list_2:
             boat.change_y = self.speed
             self.boat_list_2.update()
@@ -116,32 +127,54 @@ class GameView(arcade.View):
         Called whenever a key is released.
         Get the arrow key the user presses and move the frog accordingly
         """
+        # make helper that says if its going to hit a log???
         if symbol == arcade.key.LEFT:
             self.frog.texture = arcade.load_texture("images/frog.PNG", scale=.05)  # reset old frog image when not right
             self.frog.angle = 0
-            if (self.frog.center_x - self.column_width) < 0:  # make sure frog isn't moving off the screen or on a log
+            if (self.frog.center_x - self.column_width) < 0:  # make sure frog isn't moving off the screen
                 pass
             else:
-                self.frog.center_x = self.frog.center_x - self.column_width
+                self.potential_x = self.frog.center_x - self.column_width
+                self.potential_y = self.frog.center_y
+                if self.check_move():  # dont go if log is there. physicsengine dont workkk
+                    self.frog.center_x = self.potential_x
+
         elif symbol == arcade.key.RIGHT:
             self.frog.angle = 0
             # if you rotate the original frog to 180, it's upside down. can't reflect sprite. need new right-facing frog
             self.frog.texture = arcade.load_texture("images/rightfrog.PNG", scale=.05)
-            self.frog.center_x = self.frog.center_x + self.column_width
+            self.potential_x = self.frog.center_x + self.column_width
+            self.potential_y = self.frog.center_y
+            if self.check_move():
+                self.frog.center_x = self.potential_x
+
         elif symbol == arcade.key.UP:
             self.frog.texture = arcade.load_texture("images/frog.PNG", scale=.05)
             self.frog.angle = -90
             if (self.frog.center_y + LEVEL_HEIGHT) > WINDOW_HEIGHT:
                 pass
             else:
-                self.frog.center_y = self.frog.center_y + LEVEL_HEIGHT
+                self.potential_x = self.frog.center_x
+                self.potential_y = self.frog.center_y + LEVEL_HEIGHT
+                if self.check_move():
+                    self.frog.center_y = self.potential_y
         elif symbol == arcade.key.DOWN:
             self.frog.texture = arcade.load_texture("images/frog.PNG", scale=.05)
             self.frog.angle = 90
             if (self.frog.center_y - LEVEL_HEIGHT) < 0:
                 pass
             else:
-                self.frog.center_y = self.frog.center_y - LEVEL_HEIGHT
+                self.potential_x = self.frog.center_x
+                self.potential_y = self.frog.center_y - LEVEL_HEIGHT
+                if self.check_move():
+                    self.frog.center_y = self.potential_y
+
+    def check_move(self):
+        hit_log = False
+        for log in self.log_list:
+            if log.center_x == self.potential_x and log.center_y == self.potential_y:
+                hit_log = True #only assign if hit otherwise keep looking
+        return not hit_log
 
     def set_columns(self):
         '''
@@ -154,9 +187,9 @@ class GameView(arcade.View):
             self.column_width = LEVEL1_WIDTH
             self.offset = OFFSET1
         else:
-            self.columns = COLUMNS_23
-            self.column_width = LEVEL23_WIDTH
-            self.offset = OFFSET23
+            self.columns = COLUMNS_2
+            self.column_width = LEVEL2_WIDTH
+            self.offset = OFFSET2
 
     def make_grid(self):
         '''
@@ -179,11 +212,14 @@ class GameView(arcade.View):
                     all_rows = [1, 2, 3, 4, 5, 6]  # need a new set of columns for each row
                     while current_log <= self.logs:
                         self.log_location = random.choice(all_rows)  # randomly place it in one of the 6 rows
-                        all_rows.remove(self.log_location)
-                        log = LogSprite()
-                        log.center_y = (LEVEL_HEIGHT * self.log_location) - Y_OFFSET  # put it at the chosen row
-                        log.center_x = (self.column_width * column) - self.offset
-                        self.log_list.append(log)
+                        if self.log_location==3 and column==1:
+                            all_rows.remove(self.log_location) #make sure where the frog starts isn't a log
+                        else:
+                            all_rows.remove(self.log_location)
+                            log = LogSprite()
+                            log.center_y = (LEVEL_HEIGHT * self.log_location) - Y_OFFSET  # put it at the chosen row
+                            log.center_x = (self.column_width * column) - self.offset
+                            self.log_list.append(log)
                         current_log += 1
 
                     for empty in all_rows:  # if no log has taken the row, put a lily in it
@@ -194,6 +230,7 @@ class GameView(arcade.View):
 
                     row += 1
             column += 1
+
 
 class IntroView(arcade.View):
     """
