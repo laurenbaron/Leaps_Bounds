@@ -9,7 +9,7 @@ os.chdir(file_path)
 # Define constants
 WINDOW_WIDTH = 750
 WINDOW_HEIGHT = 750
-BACKGROUND_COLOR = arcade.color.WHITE
+BACKGROUND_COLOR = arcade.color.AERO_BLUE
 GAME_TITLE = "Froggy Road"
 GAME_SPEED = 1 / 60
 
@@ -23,7 +23,3 @@ OFFSET1 = LEVEL1_WIDTH / 2
 OFFSET23 = LEVEL23_WIDTH / 2
 LEVEL_HEIGHT = WINDOW_HEIGHT / 6
 Y_OFFSET = LEVEL_HEIGHT / 2
-
-
-
-#intro_image=arcade.load_texture("images/frog.PNG",8)

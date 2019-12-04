@@ -1,7 +1,7 @@
 from Sprites import *
 
 
-# to do list: background of start, logs, fix boats, reflect frog, documentation
+# to do list: logs, fix boats, documentation
 
 class GameView(arcade.View):
     speed: int
@@ -58,6 +58,7 @@ class GameView(arcade.View):
             else:
                 row = 1
                 current_log = 1
+
                 while row <= ROWS:
                     all_rows = [1, 2, 3, 4, 5, 6]  # need a new set of columns for each row
                     while current_log <= self.logs:
@@ -68,11 +69,13 @@ class GameView(arcade.View):
                         log.center_x = (self.column_width * column) - self.offset
                         self.log_list.append(log)
                         current_log += 1
+
                     for empty in all_rows:  # if no log has taken the row, put a lily in it
                         lily = LilySprite()
                         lily.center_y = (LEVEL_HEIGHT * empty) - Y_OFFSET
                         lily.center_x = (self.column_width * column) - self.offset
                         self.lily_list.append(lily)
+
                     row += 1
             column += 1
 
@@ -128,21 +131,25 @@ class GameView(arcade.View):
     def on_key_release(self, symbol, modifiers):
         """ Called whenever a key is released. """
         if symbol == arcade.key.LEFT:
+            self.frog.texture = arcade.load_texture("images/frog.PNG", scale=.05)  # reset old frog image when not right
             self.frog.angle = 0
             if (self.frog.center_x - self.column_width) < 0:  # make sure frog isn't moving off the screen or on a log
                 pass
             else:
                 self.frog.center_x = self.frog.center_x - self.column_width
         elif symbol == arcade.key.RIGHT:
-            # how to reflect an image!!!!
+            # if you rotate the original frog to 180, it's upside down. can't reflect sprite. need new right-facing frog
+            self.frog.texture = arcade.load_texture("images/rightfrog.PNG", scale=.05)
             self.frog.center_x = self.frog.center_x + self.column_width
         elif symbol == arcade.key.UP:
+            self.frog.texture = arcade.load_texture("images/frog.PNG", scale=.05)
             self.frog.angle = -90
             if (self.frog.center_y + LEVEL_HEIGHT) > WINDOW_HEIGHT:
                 pass
             else:
                 self.frog.center_y = self.frog.center_y + LEVEL_HEIGHT
         elif symbol == arcade.key.DOWN:
+            self.frog.texture = arcade.load_texture("images/frog.PNG", scale=.05)
             self.frog.angle = 90
             if (self.frog.center_y - LEVEL_HEIGHT) < 0:
                 pass
@@ -177,7 +184,6 @@ class IntroView(arcade.View):
 
     def on_show(self):
         arcade.set_background_color(BACKGROUND_COLOR)
-        # self.background = intro_image
         self.title = arcade.Sprite("images/froggyroad.PNG", .5)
         self.frog = arcade.Sprite("images/frog.PNG", .1)
         self.beginner = arcade.Sprite("images/beginner.png", .5)
@@ -186,8 +192,6 @@ class IntroView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
-        # print(self.background.width)
-        # arcade.draw_texture_rectangle(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
         self.title.center_x = WINDOW_WIDTH / 2
         self.title.center_y = 3 * WINDOW_HEIGHT / 4
         self.title.draw()
@@ -210,7 +214,8 @@ class IntroView(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
         if self.difficult.collides_with_point([x, y]):
-            start_game = GameView(6, 1)  # pass in the speed for the level and what level (if press intro buttons go to first level)
+            start_game = GameView(6,
+                                  1)  # pass in the speed for the level and what level (if press intro buttons go to first level)
             self.window.show_view(start_game)
         elif self.intermediate.collides_with_point([x, y]):
             start_game = GameView(4, 1)
