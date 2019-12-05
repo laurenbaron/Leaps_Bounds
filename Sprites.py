@@ -3,6 +3,7 @@ from Constants import *
 
 class LilySprite(arcade.Sprite):
     """ Lily Sprite the frog jumps on. drawn by putting in a sprite list w a while loop """
+
     def __init__(self):
         """Initialize variables"""
         super().__init__()
@@ -15,6 +16,7 @@ class LilySprite(arcade.Sprite):
 
 class LogSprite(arcade.Sprite):
     """ Log Sprite the frog cannot jump on. drawn by putting in a sprite list w a while loop """
+
     def __init__(self):
         """Initialize variables"""
         super().__init__()
@@ -29,8 +31,9 @@ class BoatSprite(arcade.Sprite):
     """ Boat Sprite the frog cannot hit. drawn by putting in a sprite list w a while loop """
     new_boat: int
     speed: int
+    already_added: bool #make sure don't keep adding a new boat once it passes the generated point (only add once)
 
-    def __init__(self, width, offset, column):
+    def __init__(self, width: int, offset: int, column: int):
         """
         Initialize variables. parameters in constructor because we get what level they are on from the GameView,
         which determines how many columns there are and how big those columns are, which determines where to
@@ -53,6 +56,7 @@ class BoatSprite(arcade.Sprite):
         used that range to allow enough room for frog to move in between boats 
         '''
         self.new_boat = random.randrange(WINDOW_HEIGHT / 2, WINDOW_HEIGHT)
+        self.already_added=False
 
     def update(self):
         """Called whenever sprite updates"""
@@ -61,7 +65,8 @@ class BoatSprite(arcade.Sprite):
 
 class FrogSprite(arcade.Sprite):
     """ Frog Sprite the user controls and is trying to get to cross the pond without touching boats/logs """
-    def __init__(self, width, offset):
+
+    def __init__(self, width: int, offset: int):
         """
         Initialize variables. parameters in constructor because we get what level they are on from the GameView,
         which determines how many columns there are and how big those columns are, which determines where to
