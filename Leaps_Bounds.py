@@ -325,12 +325,14 @@ class LoseView(arcade.View):
         """Initialize variables"""
         super().__init__()
         self.restart = None
+        self.boo = arcade.load_sound("sounds/boo.wav")
 
     def on_show(self):
         """ Setup the Lose screen """
         arcade.set_background_color(BACKGROUND_COLOR)
         self.background = arcade.load_texture("images/You_lose.png")
         self.restart = arcade.Sprite("images/restart.png")
+        arcade.play_sound(self.boo)
 
     def on_draw(self):
         """ Draw what should be displayed on the screen """
@@ -358,12 +360,14 @@ class WinView(arcade.View):
         """Initialize variables"""
         super().__init__()
         self.restart = None
+        self.cheer = arcade.load_sound("sounds/cheer.wav")
 
     def on_show(self):
         """ Setup the Win screen """
         arcade.set_background_color(BACKGROUND_COLOR)
         self.background = arcade.load_texture("images/You_win.png")
         self.restart = arcade.Sprite("images/restart.png")
+        arcade.play_sound(self.cheer)
 
     def on_draw(self):
         """ Draw what should be displayed on the screen """
