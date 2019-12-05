@@ -1,8 +1,6 @@
 from Sprites import *
 
 
-# TODO:: fix boats, preview of game
-
 class GameView(arcade.View):
     """
     The main game. Where the user moves a frog onto lily pads and avoids boats to get to the other side of the pond.
@@ -97,9 +95,7 @@ class GameView(arcade.View):
             self.boat_list_4.update()
             boat.change_y = 0
 
-        # add a new boat to list to keep list full
         self.run_boats()
-        self.frog.update()
 
         if self.frog.collides_with_list(self.boat_list_2) or self.frog.collides_with_list(self.boat_list_4):
             lose = LoseView()
@@ -226,29 +222,29 @@ class GameView(arcade.View):
     def run_boats(self):
         '''
         Helper function to add a new boat every time the boat before it gets to a randomized location
-        Spaces out the boats randomly and makes sure there is always a boat 
+        Spaces out the boats randomly and makes sure there is always a boat
         '''
-        keep_adding = True
         self.copy2 = self.boat_list_2
+
+        for boat in self.boat_list_2:
+            # random time to send the next boat based on other boat's location
+            if boat.center_y > boat.new_boat and not boat.already_added:
+                self.copy2.append(BoatSprite(self.column_width, self.offset, 2))
+                boat.already_added = True
+                if boat.center_y == WINDOW_HEIGHT + Y_OFFSET:
+                    self.copy2.remove(boat)
+            self.run_boats2()
+
+    def run_boats2(self):
+        '''same as first run_boats but for the 2nd column of the higher level'''
         self.copy4 = self.boat_list_4
+        for boat in self.boat_list_4:
+            if boat.center_y > boat.new_boat and not boat.already_added:
+                self.copy4.append(BoatSprite(self.column_width, self.offset, 4))
+                boat.already_added = True
+                if boat.center_y == WINDOW_HEIGHT + Y_OFFSET:
+                    self.copy4.remove(boat)
 
-        while keep_adding:
-            for boat in self.boat_list_2:
-                # random time to send the next boat based on other boat's location
-                if boat.center_y > boat.new_boat and not boat.already_added:
-                    self.copy2.append(BoatSprite(self.column_width, self.offset, 2))
-                    boat.already_added = True
-                    if boat.center_y == WINDOW_HEIGHT + Y_OFFSET:
-                        self.copy2.remove(boat)
-
-            for boat in self.boat_list_4:
-                if boat.center_y > boat.new_boat and not boat.already_added:
-                    self.copy4.append(BoatSprite(self.column_width, self.offset, 4))
-                    boat.already_added = True
-                    if boat.center_y == WINDOW_HEIGHT + Y_OFFSET:
-                        self.copy4.remove(boat)
-
-            keep_adding = False
 
 class IntroView(arcade.View):
     """

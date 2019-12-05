@@ -31,7 +31,7 @@ class BoatSprite(arcade.Sprite):
     """ Boat Sprite the frog cannot hit. drawn by putting in a sprite list w a while loop """
     new_boat: int
     speed: int
-    already_added: bool #make sure don't keep adding a new boat once it passes the generated point (only add once)
+    already_added: bool  # make sure don't keep adding a new boat once it passes the generated point (only add once)
 
     def __init__(self, width: int, offset: int, column: int):
         """
@@ -56,7 +56,7 @@ class BoatSprite(arcade.Sprite):
         used that range to allow enough room for frog to move in between boats 
         '''
         self.new_boat = random.randrange(WINDOW_HEIGHT / 2, WINDOW_HEIGHT)
-        self.already_added=False
+        self.already_added = False
 
     def update(self):
         """Called whenever sprite updates"""
