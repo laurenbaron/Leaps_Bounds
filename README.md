@@ -10,7 +10,7 @@ This game involves a frog sprite the user controls. The frog can only move on th
   level they are taken to where they must cross two columns of boats. If the frog survives that, then the user wins. 
   Whether the user wins or loses, they are taken to a screen where they can reset the game. 
 # Preview
-...
+the link to a demo of the game on YouTube https://youtu.be/2j79SRH3NGk
 # Installation
 python Leaps_Bounds.py
 # Instructions
@@ -18,7 +18,7 @@ Up, Down, Right, Left Arrow keys move the frog respectfully. The object of the g
 the right) without getting hit by a moving boat. The frog can only "leap" on the lilypads; the logs are obstacles! The 
 user can choose different levels which control the speed of the boats, as it is easier to cross the pond if the boats 
 are going slow and vice versa. If the game is over, the user can reset the game, which takes them back to the home 
-screen where they can choose a new level.  
+screen where they can choose a new level. Turn on sound if you want to hear sound effects!
 # Authors
 Lauren Baron; lbaron@udel.edu
 # Acknowledgements 
